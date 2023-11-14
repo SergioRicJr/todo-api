@@ -1,33 +1,32 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
-from todo.models.userModel import User
-from todo.serializers.userSerializer import UserSerializer
+from todo.serializers.taskSerializer import TaskSerializer
+from rest_framework.serializers import ValidationError
 from rest_framework.exceptions import PermissionDenied
 
-
-class GetUserView(viewsets.ViewSet):
-    def retrieve(self, request, pk=None):
+class CreateTaskView(viewsets.ViewSet):
+    def create(self, request):
         try:
-            # Retrieve the user with the specified primary key.
-            user = self.queryset.get(pk=pk)
-            # Serialize the user's data using the serializer class.
-            serializer = UserSerializer(user)
+            user = request.user
+            data = request.data
 
-            # Return a response with details of the requested user, including the user instance.
-            return Response(
-                {"detail": "Usuário retornado com sucesso!", "object": serializer.data},
-                status=200,
+            if not data:
+                raise ValidationError("No fields are being sent by the request body")
+
+            task = TaskSerializer(
+                data={
+                    "title": data.get("title"),
+                    "description": data.get("description"),
+                    "due_date": data.get("due_date"),
+                    "completed": False,
+                    "user": user.id,
+                }
             )
+            task.is_valid(raise_exception=True)
+            task.save()
 
-        except User.DoesNotExist as error:
             return Response(
-                {
-                    "detail": {
-                        "error_name": error.__class__.__name__,
-                        "error_cause": error.args,
-                    }
-                },
-                status=404,
+                {"detail": "Task created successfully", "object": task.data}, status=201
             )
 
         except PermissionDenied as error:
@@ -39,6 +38,17 @@ class GetUserView(viewsets.ViewSet):
                     }
                 },
                 status=403,
+            )
+
+        except ValidationError as error:
+            return Response(
+                {
+                    "detail": {
+                        "error_name": error.__class__.__name__,
+                        "error_cause": error.args,
+                    }
+                },
+                status=400,
             )
 
         except Exception as error:

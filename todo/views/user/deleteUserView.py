@@ -1,21 +1,32 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from todo.models.userModel import User
-from todo.serializers.userSerializer import UserSerializer
+from ...serializers.userSerializer import UserSerializer
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.exceptions import PermissionDenied
 
 
-class GetUserView(viewsets.ViewSet):
-    def retrieve(self, request, pk=None):
+class DeleteUserView(viewsets.ViewSet):
+    def destroy(self, request, pk=None):
         try:
             # Retrieve the user with the specified primary key.
-            user = self.queryset.get(pk=pk)
-            # Serialize the user's data using the serializer class.
-            serializer = UserSerializer(user)
+            deleted_user = User.objects.get(pk=pk)
 
-            # Return a response with details of the requested user, including the user instance.
+            # 'partial=True' allows partial updates of the user's data (not all fields are required).
+            serializer = UserSerializer(
+                deleted_user,
+                data={"is_active": False, "is_deleted": True},
+                partial=True,
+            )
+
+            # Validate the serializer data, raising an exception if it's not valid.
+            serializer.is_valid(raise_exception=True)
+
+            # Save the changes to the user's data as specified in the serializer.
+            serializer.save()
+
             return Response(
-                {"detail": "Usuário retornado com sucesso!", "object": serializer.data},
+                {"detail": "Usuário deletado com sucesso!", "object": serializer.data},
                 status=200,
             )
 

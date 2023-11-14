@@ -1,33 +1,30 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
-from todo.models.userModel import User
-from todo.serializers.userSerializer import UserSerializer
+from todo.serializers.taskTypeSerializer import TaskTypeSerializer
+from rest_framework.serializers import ValidationError
 from rest_framework.exceptions import PermissionDenied
 
-
-class GetUserView(viewsets.ViewSet):
-    def retrieve(self, request, pk=None):
+class CreateTaskTypeView(viewsets.ViewSet):
+    def create(self, request):
         try:
-            # Retrieve the user with the specified primary key.
-            user = self.queryset.get(pk=pk)
-            # Serialize the user's data using the serializer class.
-            serializer = UserSerializer(user)
+            user = request.user
+            data = request.data
 
-            # Return a response with details of the requested user, including the user instance.
-            return Response(
-                {"detail": "Usuário retornado com sucesso!", "object": serializer.data},
-                status=200,
+            if not data:
+                raise ValidationError("No fields are being sent by the request body")
+
+            task_type = TaskTypeSerializer(
+                data={
+                    "name": data.get('name'),
+                    "description": data.get('description'),
+                    "user": user.id
+                }
             )
+            task_type.is_valid(raise_exception=True)
+            task_type.save()
 
-        except User.DoesNotExist as error:
             return Response(
-                {
-                    "detail": {
-                        "error_name": error.__class__.__name__,
-                        "error_cause": error.args,
-                    }
-                },
-                status=404,
+                {"detail": "Task type created successfully", "object": task_type.data}, status=201
             )
 
         except PermissionDenied as error:
@@ -39,6 +36,17 @@ class GetUserView(viewsets.ViewSet):
                     }
                 },
                 status=403,
+            )
+
+        except ValidationError as error:
+            return Response(
+                {
+                    "detail": {
+                        "error_name": error.__class__.__name__,
+                        "error_cause": error.args,
+                    }
+                },
+                status=400,
             )
 
         except Exception as error:
