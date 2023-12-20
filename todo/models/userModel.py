@@ -84,6 +84,12 @@ class User(AbstractBaseUser):
     
     objects = CustomUserManager()
 
+    def has_perm(self, perm, obj=None):
+        return True
+
+    def has_module_perms(self, app_label):
+        return True
+
     REQUIRED_FIELDS = ["email", "name", "password"]
     USERNAME_FIELD = "username"
 
