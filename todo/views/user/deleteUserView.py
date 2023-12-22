@@ -4,13 +4,14 @@ from todo.models.userModel import User
 from ...serializers.userSerializer import UserSerializer
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAdminUser
 
 
 class DeleteUserView(viewsets.ViewSet):
     def destroy(self, request, pk=None):
         try:
             # Retrieve the user with the specified primary key.
-            deleted_user = User.objects.get(pk=pk)
+            deleted_user = User.objects.get(pk=pk) if IsAdminUser else request.user
 
             # 'partial=True' allows partial updates of the user's data (not all fields are required).
             serializer = UserSerializer(
