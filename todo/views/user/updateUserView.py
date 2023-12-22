@@ -6,9 +6,20 @@ from rest_framework.serializers import ValidationError
 from django.contrib.auth.hashers import make_password
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAdminUser
-
+from ...swagger_schemas.users.userGetSchema import userUniqueSchema
+from ...swagger_schemas.errors.errorSchema import errorSchema
+from ...swagger_schemas.errors.errorSchema401 import errorSchema401
+from drf_yasg.utils import swagger_auto_schema
 
 class UpdateUserView(viewsets.ViewSet):
+    
+    @swagger_auto_schema(
+        request_body=UserUpdateSerializer,
+        # Define the expected response codes and their corresponding Swagger documentation schemas.
+        responses={201: userUniqueSchema, 400: errorSchema, 401: errorSchema401},
+        # Define the tags or categories to which this operation belongs in the documentation.
+        tags=["User"]
+    )
     def update(self, request, pk=None):
         try:
             # Retrieve the data sent in the HTTP request body, which contains the updated user fields.

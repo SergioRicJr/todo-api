@@ -3,9 +3,20 @@ from rest_framework.response import Response
 from todo.models.userModel import User
 from todo.serializers.userSerializer import UserSerializer
 from rest_framework.exceptions import PermissionDenied
+from ...swagger_schemas.users.userGetSchema import userUniqueSchema
+from ...swagger_schemas.errors.errorSchema import errorSchema
+from ...swagger_schemas.errors.errorSchema401 import errorSchema401
+from drf_yasg.utils import swagger_auto_schema
 
 
 class GetUserView(viewsets.ViewSet):
+    
+    @swagger_auto_schema(
+        # Define the expected response codes and their corresponding Swagger documentation schemas.
+        responses={200: userUniqueSchema, 400: errorSchema, 401: errorSchema401},
+        # Define the tags or categories to which this operation belongs in the documentation.
+        tags=["User"]
+    )
     def retrieve(self, request, pk=None):
         try:
             # Retrieve the user with the specified primary key.
