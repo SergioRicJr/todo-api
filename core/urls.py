@@ -24,7 +24,7 @@ from rest_framework.authentication import SessionAuthentication
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="SAMU API",
+        title="TODO API",
         default_version="Beta",
     ),
     public=True,
