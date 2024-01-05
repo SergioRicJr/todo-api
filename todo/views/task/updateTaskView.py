@@ -4,6 +4,7 @@ from todo.serializers.taskSerializer import TaskSerializer
 from todo.models.taskModel import Task
 from rest_framework.serializers import ValidationError
 from rest_framework.exceptions import PermissionDenied
+from todo.utils.string_helpers import sanitize_data
 
 
 class UpdateTaskView(viewsets.ViewSet):
@@ -11,11 +12,12 @@ class UpdateTaskView(viewsets.ViewSet):
         try:
             user = request.user
             task = Task.objects.get(pk=pk)
+            data = sanitize_data(request.data)
 
             if task.user != user:
                 raise PermissionDenied("you do not have permission to update this task type")    
 
-            serializer = TaskSerializer(task, data=request.data, partial=True)
+            serializer = TaskSerializer(task, data=data, partial=True)
 
             serializer.is_valid(raise_exception=True)
             serializer.save()
