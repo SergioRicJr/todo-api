@@ -14,9 +14,7 @@ from todo.utils.string_helpers import sanitize_data
 class CreateUserView(viewsets.ViewSet):
     @swagger_auto_schema(
         request_body=UserSerializer,
-        # Define the expected response codes and their corresponding Swagger documentation schemas.
-        responses={201: userUniqueSchema, 400: errorSchema, 401: errorSchema401},
-        # Define the tags or categories to which this operation belongs in the documentation.
+        responses={201: userUniqueSchema, 400: errorSchema, 401: errorSchema401, 403: errorSchema},
         tags=["User"]
     )
     def create(self, request):

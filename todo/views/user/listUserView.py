@@ -30,10 +30,13 @@ class ListUserView(viewsets.ViewSet):
         return queryset
 
     @swagger_auto_schema(
-        # Define the expected response codes and their corresponding Swagger documentation schemas.
-        responses={200: userListSchema, 400: errorSchema, 401: errorSchema401},
-        # Define the tags or categories to which this operation belongs in the documentation.
-        tags=["User"]
+        responses={
+            200: userListSchema,
+            400: errorSchema,
+            401: errorSchema401,
+            403: errorSchema,
+        },
+        tags=["User"],
     )
     def list(self, request):
         try:
