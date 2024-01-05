@@ -1,5 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
+from todo.models.taskTypeModel import TaskType
 from todo.serializers.taskSerializer import TaskSerializer
 from rest_framework.serializers import ValidationError
 from rest_framework.exceptions import PermissionDenied
@@ -13,6 +14,11 @@ class CreateTaskView(viewsets.ViewSet):
 
             if not data:
                 raise ValidationError("No fields are being sent by the request body")
+            
+            task_type = TaskType.objects.get(pk=data.get("task_type"))
+
+            if task_type.user != user:
+                raise PermissionDenied("you do not have permission to get this task type")
 
             task = TaskSerializer(
                 data={
@@ -21,6 +27,7 @@ class CreateTaskView(viewsets.ViewSet):
                     "due_date": data.get("due_date"),
                     "completed": False,
                     "user": user.id,
+                    "task_type": data.get("task_type")
                 }
             )
             task.is_valid(raise_exception=True)
@@ -41,7 +48,7 @@ class CreateTaskView(viewsets.ViewSet):
                 status=403,
             )
 
-        except ValidationError as error:
+        except (ValidationError, TaskType.DoesNotExist) as error:
             return Response(
                 {
                     "detail": {
