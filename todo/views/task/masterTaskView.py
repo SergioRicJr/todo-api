@@ -8,6 +8,7 @@ from todo.views.task import (
 )
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from todo.permissions.not_is_deleted import NotIsDeleted
 
 class MasterTaskViewSet(
     CreateTaskView,
@@ -18,11 +19,11 @@ class MasterTaskViewSet(
 ):
     # Define a mapping of view actions to the corresponding permission classes required for each action.
     permission_classes_by_action = {
-        "list": [IsAdminUser],
-        "create": [IsAdminUser],
-        "update": [IsAdminUser],
-        "destroy": [IsAdminUser],
-        "retrieve": [IsAdminUser]
+        "list": [IsAdminUser, NotIsDeleted],
+        "create": [IsAdminUser, NotIsDeleted],
+        "update": [IsAdminUser, NotIsDeleted],
+        "destroy": [IsAdminUser, NotIsDeleted],
+        "retrieve": [IsAdminUser, NotIsDeleted]
     }
 
     authentication_classes = [JWTAuthentication]

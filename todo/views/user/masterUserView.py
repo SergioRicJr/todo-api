@@ -7,6 +7,7 @@ from todo.views.user import (
     ListUserView
 )
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
+from todo.permissions.not_is_deleted import NotIsDeleted
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class MasterUserViewSet(
@@ -18,12 +19,12 @@ class MasterUserViewSet(
 ):
     # Define a mapping of view actions to the corresponding permission classes required for each action.
     permission_classes_by_action = {
-        "list": [IsAuthenticated],
+        "list": [IsAuthenticated, NotIsDeleted],
         "create": [AllowAny],
-        "update": [IsAdminUser],
-        "destroy": [IsAdminUser],
-        "self_update": [IsAdminUser],
-        "retrieve": [IsAdminUser],
+        "update": [IsAdminUser, NotIsDeleted],
+        "destroy": [IsAdminUser, NotIsDeleted],
+        "self_update": [IsAdminUser, NotIsDeleted],
+        "retrieve": [IsAdminUser, NotIsDeleted],
     }
 
     authentication_classes = [JWTAuthentication]
