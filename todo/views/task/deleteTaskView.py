@@ -4,8 +4,17 @@ from rest_framework.response import Response
 from todo.serializers.taskSerializer import TaskSerializer
 from todo.models.taskModel import Task
 from rest_framework.exceptions import PermissionDenied
+from ...swagger_schemas.tasks.taskGetSchema import taskUniqueSchema
+from ...swagger_schemas.errors.errorSchema import errorSchema
+from ...swagger_schemas.errors.errorSchema401 import errorSchema401
+from drf_yasg.utils import swagger_auto_schema
 
 class DeleteTaskView(viewsets.ViewSet):
+
+    @swagger_auto_schema(
+        responses={200: taskUniqueSchema, 400: errorSchema, 401: errorSchema401, 403: errorSchema},
+        tags=["Task"]
+    )
     def destroy(self, request, pk=None):
         try:
             user = request.user

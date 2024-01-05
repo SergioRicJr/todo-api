@@ -4,10 +4,20 @@ from todo.serializers.taskSerializer import TaskSerializer
 from todo.models.taskModel import Task
 from rest_framework.serializers import ValidationError
 from rest_framework.exceptions import PermissionDenied
+from ...swagger_schemas.tasks.taskGetSchema import taskUniqueSchema
+from ...swagger_schemas.errors.errorSchema import errorSchema
+from ...swagger_schemas.errors.errorSchema401 import errorSchema401
+from drf_yasg.utils import swagger_auto_schema
 from todo.utils.string_helpers import sanitize_data
 
 
 class UpdateTaskView(viewsets.ViewSet):
+
+    @swagger_auto_schema(
+        request_body=TaskSerializer,
+        responses={201: taskUniqueSchema, 400: errorSchema, 401: errorSchema401, 403: errorSchema},
+        tags=["Task"]
+    )
     def update(self, request, pk=None):
         try:
             user = request.user
