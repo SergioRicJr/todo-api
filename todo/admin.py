@@ -21,7 +21,7 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class TaskAdmin(admin.ModelAdmin):
-    search_fields = ["title"]
+    search_fields = ["id", "title"]
     list_filter = ["completed", "user"]
     list_display = [
         "id",
@@ -35,7 +35,7 @@ class TaskAdmin(admin.ModelAdmin):
 
 
 class TaskTypeAdmin(admin.ModelAdmin):
-    search_fields = ["name"]
+    search_fields = ["id", "name"]
     list_filter = ["user"]
     list_display = ["id", "name", "description", "user"]
 
