@@ -3,9 +3,19 @@ from rest_framework.response import Response
 from todo.serializers.taskTypeSerializer import TaskTypeSerializer
 from rest_framework.serializers import ValidationError
 from rest_framework.exceptions import PermissionDenied
+from ...swagger_schemas.task_types.taskTypeGetSchema import taskTypeUniqueSchema
+from ...swagger_schemas.errors.errorSchema import errorSchema
+from ...swagger_schemas.errors.errorSchema401 import errorSchema401
+from drf_yasg.utils import swagger_auto_schema
 from todo.utils.string_helpers import sanitize_data
 
 class CreateTaskTypeView(viewsets.ViewSet):
+
+    @swagger_auto_schema(
+        request_body=TaskTypeSerializer,
+        responses={201: taskTypeUniqueSchema, 400: errorSchema, 401: errorSchema401, 403: errorSchema},
+        tags=["TaskType"]
+    )
     def create(self, request):
         try:
             user = request.user

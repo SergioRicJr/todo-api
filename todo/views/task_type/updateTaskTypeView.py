@@ -4,10 +4,20 @@ from todo.serializers.taskTypeSerializer import TaskTypeSerializer
 from todo.models.taskTypeModel import TaskType
 from rest_framework.serializers import ValidationError
 from rest_framework.exceptions import PermissionDenied
+from ...swagger_schemas.task_types.taskTypeGetSchema import taskTypeUniqueSchema
+from ...swagger_schemas.errors.errorSchema import errorSchema
+from ...swagger_schemas.errors.errorSchema401 import errorSchema401
+from drf_yasg.utils import swagger_auto_schema
 from todo.utils.string_helpers import sanitize_data
 
 
 class UpdateTaskTypeView(viewsets.ViewSet):
+
+    @swagger_auto_schema(
+        request_body=TaskTypeSerializer,
+        responses={200: taskTypeUniqueSchema, 400: errorSchema, 401: errorSchema401, 403: errorSchema},
+        tags=["TaskType"]
+    )
     def update(self, request, pk=None):
         try:
             user = request.user

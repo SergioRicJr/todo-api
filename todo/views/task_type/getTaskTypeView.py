@@ -1,11 +1,21 @@
 from rest_framework import viewsets
 from rest_framework import viewsets
 from rest_framework.response import Response
-from todo.serializers.taskTypeSerializer import TaskTypeSerializer
 from todo.models.taskTypeModel import TaskType
 from rest_framework.exceptions import PermissionDenied
+from todo.serializers.taskTypeSerializer import TaskTypeSerializer
+from rest_framework.exceptions import PermissionDenied
+from ...swagger_schemas.task_types.taskTypeGetSchema import taskTypeUniqueSchema
+from ...swagger_schemas.errors.errorSchema import errorSchema
+from ...swagger_schemas.errors.errorSchema401 import errorSchema401
+from drf_yasg.utils import swagger_auto_schema
 
 class GetTaskTypeView(viewsets.ViewSet):
+
+    @swagger_auto_schema(
+        responses={200: taskTypeUniqueSchema, 400: errorSchema, 401: errorSchema401, 403: errorSchema},
+        tags=["TaskType"]
+    )
     def retrieve(self, request, pk=None):
         try:
             user = request.user

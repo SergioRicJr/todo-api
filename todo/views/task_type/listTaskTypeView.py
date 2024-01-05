@@ -4,9 +4,23 @@ from rest_framework.response import Response
 from todo.serializers.taskTypeSerializer import TaskTypeSerializer
 from todo.models.taskTypeModel import TaskType
 from rest_framework.exceptions import PermissionDenied
+from ...swagger_schemas.task_types.taskTypeListSchema import taskTypeListSchema
+from ...swagger_schemas.errors.errorSchema import errorSchema
+from ...swagger_schemas.errors.errorSchema401 import errorSchema401
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.exceptions import PermissionDenied
 
 
 class ListTaskTypeView(viewsets.ViewSet):
+    def filter_queryset(self, queryset):
+        for backend in self.filter_backends:
+            queryset = backend().filter_queryset(self.request, queryset, self)
+        return queryset
+
+    @swagger_auto_schema(
+        responses={200: taskTypeListSchema, 401: errorSchema401, 403: errorSchema},
+        tags=["TaskType"]
+    )
     def list(self, request):
         try:
             user = request.user
