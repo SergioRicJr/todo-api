@@ -3,12 +3,13 @@ from rest_framework.response import Response
 from todo.serializers.taskTypeSerializer import TaskTypeSerializer
 from rest_framework.serializers import ValidationError
 from rest_framework.exceptions import PermissionDenied
+from todo.utils.string_helpers import sanitize_data
 
 class CreateTaskTypeView(viewsets.ViewSet):
     def create(self, request):
         try:
             user = request.user
-            data = request.data
+            data = sanitize_data(request.data)
 
             if not data:
                 raise ValidationError("No fields are being sent by the request body")
