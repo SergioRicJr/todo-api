@@ -9,9 +9,24 @@ from ...swagger_schemas.errors.errorSchema import errorSchema
 from ...swagger_schemas.errors.errorSchema401 import errorSchema401
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.exceptions import PermissionDenied
+from django_filters.rest_framework.backends import DjangoFilterBackend
+from rest_framework import filters
 
 
 class ListTaskTypeView(viewsets.ViewSet):
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.OrderingFilter,
+        filters.SearchFilter,
+    ]
+
+    ordering_fields = ["name", "id"]
+
+    search_fields = ["name"]
+
+    filterset_fields = ["user"]
+
+
     def filter_queryset(self, queryset):
         for backend in self.filter_backends:
             queryset = backend().filter_queryset(self.request, queryset, self)
