@@ -1,6 +1,6 @@
 from drf_yasg import openapi
 
-taskListSchema = openapi.Schema(
+taskTypeListSchema = openapi.Schema(
     title="Succesfull schema",
     type=openapi.TYPE_OBJECT,
     properties={
