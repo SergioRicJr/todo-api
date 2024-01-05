@@ -10,6 +10,7 @@ from ...swagger_schemas.users.userGetSchema import userUniqueSchema
 from ...swagger_schemas.errors.errorSchema import errorSchema
 from ...swagger_schemas.errors.errorSchema401 import errorSchema401
 from drf_yasg.utils import swagger_auto_schema
+from todo.utils.string_helpers import sanitize_data
 
 class UpdateUserView(viewsets.ViewSet):
     
@@ -23,7 +24,7 @@ class UpdateUserView(viewsets.ViewSet):
     def update(self, request, pk=None):
         try:
             # Retrieve the data sent in the HTTP request body, which contains the updated user fields.
-            updated_fields = User.objects.get(pk=pk) if IsAdminUser else request.user
+            updated_fields = sanitize_data(request.data)
 
             if not updated_fields:
                 # If no fields are being sent in the request body, raise a validation error.
@@ -36,7 +37,7 @@ class UpdateUserView(viewsets.ViewSet):
                 updated_fields["password"] = make_password(updated_fields["password"])
 
             # Retrieve the user instance to be updated using the provided primary key (pk).
-            updated_user = request.user
+            updated_user = User.objects.get(pk=pk) if IsAdminUser else request.user
 
             # 'partial=True' allows partial updates of the user's data (not all fields are required).
             serializer = UserUpdateSerializer(

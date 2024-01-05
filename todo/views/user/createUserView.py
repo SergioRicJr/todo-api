@@ -9,6 +9,7 @@ from ...swagger_schemas.users.userGetSchema import userUniqueSchema
 from ...swagger_schemas.errors.errorSchema import errorSchema
 from ...swagger_schemas.errors.errorSchema401 import errorSchema401
 from drf_yasg.utils import swagger_auto_schema
+from todo.utils.string_helpers import sanitize_data
 
 class CreateUserView(viewsets.ViewSet):
     @swagger_auto_schema(
@@ -21,7 +22,7 @@ class CreateUserView(viewsets.ViewSet):
     def create(self, request):
         try:
             # Retrieve the data from the HTTP request body and store it in the 'data' variable.
-            data = request.data
+            data = sanitize_data(request.data)
 
             # If no data is provided in the request body, raise a ValidationError indicating that no fields are being sent.
             if not data:
