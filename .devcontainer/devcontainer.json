@@ -7,7 +7,7 @@
 	"runArgs": [
         "--name=samu-apppp"
     ],
-	"postCreateCommand": "pip install --upgrade pip setuptools && pip install --user -r requirements.txt && python manage.py migrate",
+	"postCreateCommand": "cd main_app && pip install --upgrade pip setuptools && pip install --user -r requirements.txt && python manage.py migrate",
 	"customizations": {
 		"vscode": {
 			"extensions": [
