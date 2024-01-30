@@ -1,11 +1,12 @@
 import os
 from django.db import migrations
 
+
 class Migration(migrations.Migration):
     # migration to create a default superuser at app startup, using environment variables
-    
+
     dependencies = [
-        ('todo', '0001_initial'),
+        ("todo", "0002_user_email_confirmed"),
     ]
 
     def generate_superuser(apps, schema_editor):
@@ -17,10 +18,7 @@ class Migration(migrations.Migration):
         password = os.getenv("SUPERUSER_PASSWORD", "change-me")
 
         superuser = User.objects.create_superuser(
-            name=name,
-            username=username,
-            email=email,
-            password=password
+            name=name, username=username, email=email, password=password
         )
 
         superuser.save()

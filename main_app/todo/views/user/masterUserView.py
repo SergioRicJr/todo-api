@@ -6,6 +6,7 @@ from todo.views.user import (
     DeleteUserView,
     ListUserView
 )
+from todo.views.user.confirmEmailView import ConfirmEmailView
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from todo.permissions.not_is_deleted import NotIsDeleted
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -16,6 +17,7 @@ class MasterUserViewSet(
     UpdateUserView,
     DeleteUserView,
     ListUserView,
+    ConfirmEmailView
 ):
     # Define a mapping of view actions to the corresponding permission classes required for each action.
     permission_classes_by_action = {
@@ -25,6 +27,7 @@ class MasterUserViewSet(
         "destroy": [IsAdminUser, NotIsDeleted],
         "self_update": [IsAdminUser, NotIsDeleted],
         "retrieve": [IsAdminUser, NotIsDeleted],
+        "confirm_email": [AllowAny]
     }
 
     authentication_classes = [JWTAuthentication]

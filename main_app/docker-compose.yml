@@ -1,0 +1,54 @@
+version: '3.7'
+services:
+  todo-app:
+    container_name: todo-app
+    restart: always
+    build:
+      context: .
+    ports:
+      - 8000:8000
+    depends_on:
+      - psql
+    env_file:
+      - .env
+    networks:
+      - todo-network
+
+
+  psql:
+    container_name: psql
+    image: postgres
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - todo-network
+
+
+   
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq
+    ports: 
+      - 15672:15672
+      - 5672:5672
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq/
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    restart: always
+    networks:
+      - todo-network
+
+networks:
+  todo-network:
+    driver: bridge 
+    name: todo-network
+
+volumes:
+  db_data:
+  rabbitmq:
