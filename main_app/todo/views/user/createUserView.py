@@ -26,22 +26,17 @@ class CreateUserView(viewsets.ViewSet):
     def create(self, request):
         try:
             with transaction.atomic():
-                # Retrieve the data from the HTTP request body and store it in the 'data' variable.
                 data = sanitize_data(request.data)
 
-                # If no data is provided in the request body, raise a ValidationError indicating that no fields are being sent.
                 if not data:
                     raise ValidationError(
                         "Nenhum campo foi enviado no corpo da requisição."
                     )
 
-                # Encrypt the password before saving it to the database.
                 data["password"] = make_password(data["password"])
 
-                # Create a user instance using the defined serializer class and the provided data.
                 user = UserSerializer(data=data)
 
-                # Check if the user data is valid according to the serializer's validation rules.
                 user.is_valid(raise_exception=True)
             
                 user.save()
@@ -59,15 +54,15 @@ class CreateUserView(viewsets.ViewSet):
 
                 email_confirmation.save()
 
-                # credentials = pika.PlainCredentials(username=os.getenv("RABBIT_USERNAME"), password=os.getenv("RABBIT_PASSWORD"))
-                # connetion = pika.BlockingConnection(pika.ConnectionParameters(host=os.getenv("IP_RABBITMQ"), credentials=credentials))
-                # channel = connetion.channel()
+                credentials = pika.PlainCredentials(username=os.getenv("RABBIT_USERNAME"), password=os.getenv("RABBIT_PASSWORD"))
+                connetion = pika.BlockingConnection(pika.ConnectionParameters(host=os.getenv("IP_RABBITMQ"), credentials=credentials))
+                channel = connetion.channel()
 
-                # routing_key = os.getenv("ROUTING_KEY")
-                # msg = json.dumps({'email': user.data['email'], 'token': token})
+                routing_key = os.getenv("ROUTING_KEY")
+                msg = json.dumps({'email': user.data['email'], 'token': token})
 
-                # channel.basic_publish(exchange='email_confirm_exchange', routing_key=routing_key, body=msg)
-                # channel.close()
+                channel.basic_publish(exchange='email_confirm_exchange', routing_key=routing_key, body=msg)
+                channel.close()
                 
             return Response(
                 {"detail": "Usuário criado com sucesso!", "object": user.data},
