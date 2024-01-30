@@ -1,0 +1,14 @@
+version: '3.7'
+services:
+  email_sender:
+    build:
+      context: .
+    container_name: email_sender
+    restart: always
+    networks:
+      - todo-network
+
+networks:
+  todo-network:
+    external:
+      name: todo-network
