@@ -19,20 +19,16 @@ class DeleteUserView(viewsets.ViewSet):
     )
     def destroy(self, request, pk=None):
         try:
-            # Retrieve the user with the specified primary key.
             deleted_user = User.objects.get(pk=pk) if IsAdminUser else request.user
 
-            # 'partial=True' allows partial updates of the user's data (not all fields are required).
             serializer = UserSerializer(
                 deleted_user,
                 data={"is_active": False, "is_deleted": True},
                 partial=True,
             )
 
-            # Validate the serializer data, raising an exception if it's not valid.
             serializer.is_valid(raise_exception=True)
 
-            # Save the changes to the user's data as specified in the serializer.
             serializer.save()
 
             return Response(

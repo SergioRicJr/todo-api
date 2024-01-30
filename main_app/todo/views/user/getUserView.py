@@ -17,12 +17,10 @@ class GetUserView(viewsets.ViewSet):
     )
     def retrieve(self, request, pk=None):
         try:
-            # Retrieve the user with the specified primary key.
             user = self.queryset.get(pk=pk)
-            # Serialize the user's data using the serializer class.
+
             serializer = UserSerializer(user)
 
-            # Return a response with details of the requested user, including the user instance.
             return Response(
                 {"detail": "Usuário retornado com sucesso!", "object": serializer.data},
                 status=200,

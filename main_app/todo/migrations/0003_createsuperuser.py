@@ -3,7 +3,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    # migration to create a default superuser at app startup, using environment variables
 
     dependencies = [
         ("todo", "0002_user_email_confirmed"),

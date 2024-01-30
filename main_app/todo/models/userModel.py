@@ -58,23 +58,6 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class User(AbstractBaseUser):
-    """
-    Custom User model.
-
-    Attributes:
-        name (CharField): The user's name (max length: 60).
-
-        email (CharField): The user's email address (max length: 133, unique).
-        
-        username (CharField): The user's username (max length: 60, unique).
-
-        is_staff (BooleanField): Indicates if the user is a staff member (default: False).
-
-        is_superuser (BooleanField): Indicates if the user is a superuser (default: False).
-
-        is_active (BooleanField): Indicates if the user is active (default: True).
-    """
-
     name = models.CharField(max_length=60)
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=60, unique=True)
