@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from todo.permissions.email_confirmed import EmailConfirmed
 from todo.views.task_type import (
     CreateTaskTypeView,
     ListTaskTypeView,
@@ -19,11 +20,11 @@ class MasterTaskTypeViewSet(
 ):
     # Define a mapping of view actions to the corresponding permission classes required for each action.
     permission_classes_by_action = {
-        "list": [IsAdminUser, NotIsDeleted],
-        "create": [IsAdminUser, NotIsDeleted],
-        "update": [IsAdminUser, NotIsDeleted],
-        "destroy": [IsAdminUser, NotIsDeleted],
-        "retrieve": [IsAdminUser, NotIsDeleted]
+        "list": [IsAdminUser, NotIsDeleted, EmailConfirmed],
+        "create": [IsAdminUser, NotIsDeleted, EmailConfirmed],
+        "update": [IsAdminUser, NotIsDeleted, EmailConfirmed],
+        "destroy": [IsAdminUser, NotIsDeleted, EmailConfirmed],
+        "retrieve": [IsAdminUser, NotIsDeleted, EmailConfirmed]
     }
 
     authentication_classes = [JWTAuthentication]

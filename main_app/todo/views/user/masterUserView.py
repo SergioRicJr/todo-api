@@ -1,4 +1,5 @@
 # from rest_framework import viewsets
+from todo.permissions.email_confirmed import EmailConfirmed
 from todo.views.user import (
     CreateUserView,
     GetUserView,
@@ -21,12 +22,11 @@ class MasterUserViewSet(
 ):
     # Define a mapping of view actions to the corresponding permission classes required for each action.
     permission_classes_by_action = {
-        "list": [IsAuthenticated, NotIsDeleted],
+        "list": [IsAuthenticated, NotIsDeleted, EmailConfirmed],
         "create": [AllowAny],
-        "update": [IsAdminUser, NotIsDeleted],
-        "destroy": [IsAdminUser, NotIsDeleted],
-        "self_update": [IsAdminUser, NotIsDeleted],
-        "retrieve": [IsAdminUser, NotIsDeleted],
+        "update": [IsAdminUser, NotIsDeleted, EmailConfirmed],
+        "destroy": [IsAdminUser, NotIsDeleted, EmailConfirmed],
+        "retrieve": [IsAdminUser, NotIsDeleted, EmailConfirmed],
         "confirm_email": [AllowAny]
     }
 
