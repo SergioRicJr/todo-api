@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         password = os.getenv("SUPERUSER_PASSWORD", "change-me")
 
         superuser = User.objects.create_superuser(
-            name=name, username=username, email=email, password=password
+            name=name, username=username, email=email, password=password, email_confirmed=True
         )
 
         superuser.save()
