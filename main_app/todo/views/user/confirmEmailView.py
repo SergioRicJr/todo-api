@@ -6,6 +6,7 @@ from todo.serializers.userSerializer import UserSerializer
 from todo.models.emailConfirmationModel import EmailConfirmation
 from rest_framework.decorators import action
 from rest_framework.request import Request
+from todo.utils.log_config import logger
 
 
 class ConfirmEmailView(viewsets.ViewSet):
@@ -26,12 +27,21 @@ class ConfirmEmailView(viewsets.ViewSet):
 
             serialized_user.save()
 
+            logger.info(
+                f"the email of user with id {user.id} confirmed through the email confirmation endpoint"
+            )
             return Response(
-                {"detail": "Email confirmado com sucesso!", "object": serialized_user.data},
+                {
+                    "detail": "Email confirmado com sucesso!",
+                    "object": serialized_user.data,
+                },
                 status=200,
             )
-        
+
         except EmailConfirmation.DoesNotExist as error:
+            logger.error(
+                f"{error.__class__.__name__} exception caught on user deletion endpoint"
+            )
             return Response(
                 {
                     "detail": {
@@ -42,18 +52,10 @@ class ConfirmEmailView(viewsets.ViewSet):
                 status=404,
             )
 
-        except PermissionDenied as error:
-            return Response(
-                {
-                    "detail": {
-                        "error_name": error.__class__.__name__,
-                        "error_cause": error.args,
-                    }
-                },
-                status=403,
-            )
-
         except Exception as error:
+            logger.error(
+                f"{error.__class__.__name__} exception caught on user deletion endpoint"
+            )
             return Response(
                 {
                     "detail": {
