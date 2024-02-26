@@ -16,12 +16,19 @@ import pika
 import os
 from django.db import transaction
 import json
+from todo.utils.log_config import logger
+
 
 class CreateUserView(viewsets.ViewSet):
     @swagger_auto_schema(
         request_body=UserSerializer,
-        responses={201: userUniqueSchema, 400: errorSchema, 401: errorSchema401, 403: errorSchema},
-        tags=["User"]
+        responses={
+            201: userUniqueSchema,
+            400: errorSchema,
+            401: errorSchema401,
+            403: errorSchema,
+        },
+        tags=["User"],
     )
     def create(self, request):
         try:
@@ -38,14 +45,18 @@ class CreateUserView(viewsets.ViewSet):
                 user = UserSerializer(data=data)
 
                 user.is_valid(raise_exception=True)
-            
+
                 user.save()
+                logger.info(
+                    f"user with id {user.data['id']} created and added to the database"
+                )
 
                 token = make_random_hash()
+                logger.info(f"O código é {token}")
 
                 email_confirmation = EmailConfirmationSerializer(
                     data={
-                        "user": user.data['id'],
+                        "user": user.data["id"],
                         "token": token,
                     }
                 )
@@ -53,23 +64,51 @@ class CreateUserView(viewsets.ViewSet):
                 email_confirmation.is_valid(raise_exception=True)
 
                 email_confirmation.save()
+                logger.info(
+                    f"email confirmation record created for user with id {user.data['id']}"
+                )
 
-                credentials = pika.PlainCredentials(username=os.getenv("RABBIT_USERNAME"), password=os.getenv("RABBIT_PASSWORD"))
-                connetion = pika.BlockingConnection(pika.ConnectionParameters(host=os.getenv("IP_RABBITMQ"), credentials=credentials))
+                credentials = pika.PlainCredentials(
+                    username=os.getenv("RABBIT_USERNAME"),
+                    password=os.getenv("RABBIT_PASSWORD"),
+                )
+                connetion = pika.BlockingConnection(
+                    pika.ConnectionParameters(
+                        host=os.getenv("IP_RABBITMQ"), credentials=credentials
+                    )
+                )
                 channel = connetion.channel()
+                logger.info(
+                    "rabbitMQ connection channel has been started by the application"
+                )
 
                 routing_key = os.getenv("ROUTING_KEY")
-                msg = json.dumps({'email': user.data['email'], 'token': token})
+                msg = json.dumps({"email": user.data["email"], "token": token})
 
-                channel.basic_publish(exchange='email_confirm_exchange', routing_key=routing_key, body=msg)
+                channel.basic_publish(
+                    exchange="email_confirm_exchange", routing_key=routing_key, body=msg
+                )
+                logger.info(
+                    f"message published on rabbitMQ for user with id {user.data['id']}"
+                )
+
                 channel.close()
-                
+                logger.info(
+                    "rabbitMQ connection channel has been closed by the application"
+                )
+
+            logger.info(
+                f"all user creation endpoint transactions were completed successfully"
+            )
             return Response(
                 {"detail": "Usuário criado com sucesso!", "object": user.data},
                 status=201,
             )
 
         except KeyError as error:
+            logger.error(
+                f"{error.__class__.__name__} exception caught on user creation endpoint"
+            )
             return Response(
                 {
                     "detail": {
@@ -81,6 +120,9 @@ class CreateUserView(viewsets.ViewSet):
             )
 
         except ValidationError as error:
+            logger.error(
+                f"{error.__class__.__name__} exception caught on user creation endpoint"
+            )
             return Response(
                 {
                     "detail": {
@@ -92,6 +134,9 @@ class CreateUserView(viewsets.ViewSet):
             )
 
         except PermissionDenied as error:
+            logger.error(
+                f"PermissionDenied exception caught on user list endpoint by user with id {request.user.id}"
+            )
             return Response(
                 {
                     "detail": {

@@ -11,13 +11,20 @@ from ...swagger_schemas.errors.errorSchema import errorSchema
 from ...swagger_schemas.errors.errorSchema401 import errorSchema401
 from drf_yasg.utils import swagger_auto_schema
 from todo.utils.string_helpers import sanitize_data
+from todo.utils.log_config import logger
+
 
 class UpdateUserView(viewsets.ViewSet):
-    
+
     @swagger_auto_schema(
         request_body=UserUpdateSerializer,
-        responses={201: userUniqueSchema, 400: errorSchema, 401: errorSchema401, 403: errorSchema},
-        tags=["User"]
+        responses={
+            201: userUniqueSchema,
+            400: errorSchema,
+            401: errorSchema401,
+            403: errorSchema,
+        },
+        tags=["User"],
     )
     def update(self, request, pk=None):
         try:
@@ -40,6 +47,9 @@ class UpdateUserView(viewsets.ViewSet):
             serializer.is_valid(raise_exception=True)
 
             serializer.save()
+            logger.info(
+                f"user with id {serializer.data['id']} was updated successfully, body chegou com os seguintes dados: {updated_fields}"
+            )
 
             return Response(
                 {
@@ -50,6 +60,9 @@ class UpdateUserView(viewsets.ViewSet):
             )
 
         except ValidationError as error:
+            logger.error(
+                f"{error.__class__.__name__} exception caught on user update endpoint"
+            )
             return Response(
                 {
                     "detail": {
@@ -61,6 +74,9 @@ class UpdateUserView(viewsets.ViewSet):
             )
 
         except User.DoesNotExist as error:
+            logger.error(
+                f"{error.__class__.__name__} exception caught on user update endpoint"
+            )
             return Response(
                 {
                     "detail": {
@@ -72,6 +88,9 @@ class UpdateUserView(viewsets.ViewSet):
             )
 
         except PermissionDenied as error:
+            logger.error(
+                f"PermissionDenied exception caught on user update endpoint by user with id {request.user.id}"
+            )
             return Response(
                 {
                     "detail": {
@@ -83,6 +102,9 @@ class UpdateUserView(viewsets.ViewSet):
             )
 
         except Exception as error:
+            logger.error(
+                f"{error.__class__.__name__} exception caught on user update endpoint"
+            )
             return Response(
                 {
                     "detail": {

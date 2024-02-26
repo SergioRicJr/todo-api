@@ -9,13 +9,19 @@ from ...swagger_schemas.users.userGetSchema import userUniqueSchema
 from ...swagger_schemas.errors.errorSchema import errorSchema
 from ...swagger_schemas.errors.errorSchema401 import errorSchema401
 from drf_yasg.utils import swagger_auto_schema
+from todo.utils.log_config import logger
 
 
 class DeleteUserView(viewsets.ViewSet):
-    
+
     @swagger_auto_schema(
-        responses={200: userUniqueSchema, 400: errorSchema, 401: errorSchema401, 403: errorSchema},
-        tags=["User"]
+        responses={
+            200: userUniqueSchema,
+            400: errorSchema,
+            401: errorSchema401,
+            403: errorSchema,
+        },
+        tags=["User"],
     )
     def destroy(self, request, pk=None):
         try:
@@ -31,12 +37,16 @@ class DeleteUserView(viewsets.ViewSet):
 
             serializer.save()
 
+            logger.info(f"user with id {serializer.data['id']} has been deleted")
             return Response(
                 {"detail": "Usuário deletado com sucesso!", "object": serializer.data},
                 status=200,
             )
 
         except User.DoesNotExist as error:
+            logger.error(
+                f"{error.__class__.__name__} exception caught on user deletion endpoint"
+            )
             return Response(
                 {
                     "detail": {
@@ -48,6 +58,9 @@ class DeleteUserView(viewsets.ViewSet):
             )
 
         except PermissionDenied as error:
+            logger.error(
+                f"PermissionDenied exception caught on user deletion endpoint by user with id {request.user.id}"
+            )
             return Response(
                 {
                     "detail": {
@@ -59,6 +72,9 @@ class DeleteUserView(viewsets.ViewSet):
             )
 
         except Exception as error:
+            logger.error(
+                f"{error.__class__.__name__} exception caught on user deletion endpoint"
+            )
             return Response(
                 {
                     "detail": {

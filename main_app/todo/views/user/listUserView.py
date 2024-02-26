@@ -9,6 +9,7 @@ from ...swagger_schemas.users.userListSchema import userListSchema
 from ...swagger_schemas.errors.errorSchema import errorSchema
 from ...swagger_schemas.errors.errorSchema401 import errorSchema401
 from drf_yasg.utils import swagger_auto_schema
+from todo.utils.log_config import logger
 
 
 class ListUserView(viewsets.ViewSet):
@@ -44,11 +45,17 @@ class ListUserView(viewsets.ViewSet):
             serializer = UserSerializer(queryset, many=True)
 
             if serializer.data == []:
+                logger.info(
+                    f"user list endpoint returned an empty array by user with id {request.user.id}"
+                )
                 return Response(
                     {"detail": "Usuários não encontrados.", "object": serializer.data},
                     status=200,
                 )
 
+            logger.info(
+                f"request successfully made to the user listing endpoint by the user with id {request.user.id}"
+            )
             return Response(
                 {
                     "detail": "Usuários retornados com sucesso!",
@@ -58,6 +65,9 @@ class ListUserView(viewsets.ViewSet):
             )
 
         except PermissionDenied as error:
+            logger.error(
+                f"PermissionDenied exception caught on user list endpoint by user with id {request.user.id}"
+            )
             return Response(
                 {
                     "detail": {
@@ -69,6 +79,9 @@ class ListUserView(viewsets.ViewSet):
             )
 
         except Exception as error:
+            logger.error(
+                f"{error.__class__.__name__} exception caught on user list endpoint"
+            )
             return Response(
                 {
                     "detail": {
