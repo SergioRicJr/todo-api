@@ -135,7 +135,7 @@ class CreateUserView(viewsets.ViewSet):
 
         except PermissionDenied as error:
             logger.error(
-                f"PermissionDenied exception caught on user list endpoint by user with id {request.user.id}"
+                f"PermissionDenied exception caught on user creation endpoint by user with id {request.user.id}"
             )
             return Response(
                 {
@@ -148,6 +148,9 @@ class CreateUserView(viewsets.ViewSet):
             )
 
         except Exception as error:
+            logger.error(
+                f"{error.__class__.__name__} exception caught on user creation endpoint"
+            )
             return Response(
                 {
                     "detail": {

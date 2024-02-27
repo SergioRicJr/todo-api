@@ -40,7 +40,7 @@ class ConfirmEmailView(viewsets.ViewSet):
 
         except EmailConfirmation.DoesNotExist as error:
             logger.error(
-                f"{error.__class__.__name__} exception caught on user deletion endpoint"
+                f"{error.__class__.__name__} exception caught on email confirmation endpoint"
             )
             return Response(
                 {
@@ -54,7 +54,7 @@ class ConfirmEmailView(viewsets.ViewSet):
 
         except Exception as error:
             logger.error(
-                f"{error.__class__.__name__} exception caught on user deletion endpoint"
+                f"{error.__class__.__name__} exception caught on email confirmation endpoint"
             )
             return Response(
                 {

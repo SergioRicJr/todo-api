@@ -66,7 +66,7 @@ class ListUserView(viewsets.ViewSet):
 
         except PermissionDenied as error:
             logger.error(
-                f"PermissionDenied exception caught on user list endpoint by user with id {request.user.id}"
+                f"PermissionDenied exception caught on user listing endpoint by user with id {request.user.id}"
             )
             return Response(
                 {
@@ -80,7 +80,7 @@ class ListUserView(viewsets.ViewSet):
 
         except Exception as error:
             logger.error(
-                f"{error.__class__.__name__} exception caught on user list endpoint"
+                f"{error.__class__.__name__} exception caught on user listing endpoint"
             )
             return Response(
                 {

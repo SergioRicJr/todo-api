@@ -48,7 +48,7 @@ class UpdateUserView(viewsets.ViewSet):
 
             serializer.save()
             logger.info(
-                f"user with id {serializer.data['id']} was updated successfully, body chegou com os seguintes dados: {updated_fields}"
+                f"user with id {serializer.data['id']} was updated successfully"
             )
 
             return Response(
