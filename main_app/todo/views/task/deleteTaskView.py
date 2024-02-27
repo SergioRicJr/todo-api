@@ -8,12 +8,19 @@ from ...swagger_schemas.tasks.taskGetSchema import taskUniqueSchema
 from ...swagger_schemas.errors.errorSchema import errorSchema
 from ...swagger_schemas.errors.errorSchema401 import errorSchema401
 from drf_yasg.utils import swagger_auto_schema
+from todo.utils.log_config import logger
+
 
 class DeleteTaskView(viewsets.ViewSet):
 
     @swagger_auto_schema(
-        responses={200: taskUniqueSchema, 400: errorSchema, 401: errorSchema401, 403: errorSchema},
-        tags=["Task"]
+        responses={
+            200: taskUniqueSchema,
+            400: errorSchema,
+            401: errorSchema401,
+            403: errorSchema,
+        },
+        tags=["Task"],
     )
     def destroy(self, request, pk=None):
         try:
@@ -25,13 +32,47 @@ class DeleteTaskView(viewsets.ViewSet):
 
             task.delete()
 
+            logger.info(f"task with id {task.id} deleted successfully by user with id {user.id}")
             return Response({"detail": "Task deleted successfully"}, status=200)
-        
+
         except PermissionDenied as error:
-            return Response({"detail": { 'error_name': error.__class__.__name__, 'error_cause': error.args}}, status=403)
-        
+            logger.error(
+                f"PermissionDenied exception caught on task deletion endpoint by user with id {request.user.id}"
+            )
+            return Response(
+                {
+                    "detail": {
+                        "error_name": error.__class__.__name__,
+                        "error_cause": error.args,
+                    }
+                },
+                status=403,
+            )
+
         except Task.DoesNotExist as error:
-            return Response({"detail": { 'error_name': error.__class__.__name__, 'error_cause': error.args}}, status=400)
-    
+            logger.error(
+                f"{error.__class__.__name__} exception caught on task deletion endpoint"
+            )
+            return Response(
+                {
+                    "detail": {
+                        "error_name": error.__class__.__name__,
+                        "error_cause": error.args,
+                    }
+                },
+                status=400,
+            )
+
         except Exception as error:
-            return Response({"detail": {'error_name': error.__class__.__name__, 'error_cause': error.args}}, status=500)
+            logger.error(
+                f"{error.__class__.__name__} exception caught on task deletion endpoint"
+            )
+            return Response(
+                {
+                    "detail": {
+                        "error_name": error.__class__.__name__,
+                        "error_cause": error.args,
+                    }
+                },
+                status=500,
+            )

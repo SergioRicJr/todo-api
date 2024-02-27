@@ -11,6 +11,7 @@ from ...swagger_schemas.tasks.taskListSchema import taskListSchema
 from ...swagger_schemas.errors.errorSchema import errorSchema
 from ...swagger_schemas.errors.errorSchema401 import errorSchema401
 from drf_yasg.utils import swagger_auto_schema
+from todo.utils.log_config import logger
 
 
 class ListTaskView(viewsets.ViewSet):
@@ -47,16 +48,21 @@ class ListTaskView(viewsets.ViewSet):
             serializer = TaskSerializer(tasks, many=True)
 
             if not serializer.data:
+                logger.info(f"list tasks endpoint returned an empty array by user with id {user.id}")
                 return Response(
                     {"detail": "Tasks not found", "object": serializer.data}, status=200
                 )
 
+            logger.info(f"list of tasks returned successfully by user with id {user.id}")
             return Response(
                 {"detail": "Tasks returned successfully", "object": serializer.data},
                 status=200,
             )
 
         except PermissionDenied as error:
+            logger.error(
+                f"PermissionDenied exception caught on list task endpoint by user with id {request.user.id}"
+            )
             return Response(
                 {
                     "detail": {
@@ -68,6 +74,9 @@ class ListTaskView(viewsets.ViewSet):
             )
 
         except Exception as error:
+            logger.error(
+                f"{error.__class__.__name__} exception caught on list task endpoint"
+            )
             return Response(
                 {
                     "detail": {
