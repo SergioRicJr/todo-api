@@ -9,6 +9,7 @@ from ...swagger_schemas.errors.errorSchema import errorSchema
 from ...swagger_schemas.errors.errorSchema401 import errorSchema401
 from drf_yasg.utils import swagger_auto_schema
 from todo.utils.string_helpers import sanitize_data
+from todo.utils.log_config import logger
 
 
 class UpdateTaskTypeView(viewsets.ViewSet):
@@ -32,12 +33,16 @@ class UpdateTaskTypeView(viewsets.ViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
 
+            logger.info(f"taskType with id {task_type.data['id']} updated successfully by user with id {user.id}")
             return Response(
                 {"detail": "Task type updated successfully", "object": serializer.data},
                 status=200,
             )
 
         except ValidationError as error:
+            logger.error(
+                f"{error.__class__.__name__} exception caught on update taskType endpoint"
+            )
             return Response(
                 {
                     "detail": {
@@ -49,6 +54,9 @@ class UpdateTaskTypeView(viewsets.ViewSet):
             )
 
         except PermissionDenied as error:
+            logger.error(
+                f"PermissionDenied exception caught on update taskType endpoint by user with id {request.user.id}"
+            )
             return Response(
                 {
                     "detail": {
@@ -60,6 +68,9 @@ class UpdateTaskTypeView(viewsets.ViewSet):
             )
 
         except TaskType.DoesNotExist as error:
+            logger.error(
+                f"{error.__class__.__name__} exception caught on update taskType endpoint"
+            )
             return Response(
                 {
                     "detail": {
@@ -71,6 +82,9 @@ class UpdateTaskTypeView(viewsets.ViewSet):
             )
 
         except Exception as error:
+            logger.error(
+                f"{error.__class__.__name__} exception caught on update taskType endpoint"
+            )
             return Response(
                 {
                     "detail": {
