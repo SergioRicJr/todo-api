@@ -38,7 +38,7 @@ class UpdateUserView(viewsets.ViewSet):
             if "password" in updated_fields:
                 updated_fields["password"] = make_password(updated_fields["password"])
 
-            updated_user = User.objects.get(pk=pk) if IsAdminUser else request.user
+            updated_user = User.objects.get(pk=pk) if request.user.is_superuser else request.user
 
             serializer = UserUpdateSerializer(
                 updated_user, data=updated_fields, partial=True
@@ -47,9 +47,9 @@ class UpdateUserView(viewsets.ViewSet):
             serializer.is_valid(raise_exception=True)
 
             serializer.save()
-            logger.info(
-                f"user with id {serializer.data['id']} was updated successfully"
-            )
+            # logger.info(
+            #     f"user with id {serializer.data['id']} was updated successfully"
+            # )
 
             return Response(
                 {

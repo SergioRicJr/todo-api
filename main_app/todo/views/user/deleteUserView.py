@@ -25,7 +25,7 @@ class DeleteUserView(viewsets.ViewSet):
     )
     def destroy(self, request, pk=None):
         try:
-            deleted_user = User.objects.get(pk=pk) if IsAdminUser else request.user
+            deleted_user = User.objects.get(pk=pk) if request.user.is_superuser else request.user
 
             serializer = UserSerializer(
                 deleted_user,
