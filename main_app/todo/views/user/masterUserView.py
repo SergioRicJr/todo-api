@@ -24,7 +24,7 @@ class MasterUserViewSet(
     permission_classes_by_action = {
         "list": [IsAuthenticated, NotIsDeleted, EmailConfirmed],
         "create": [AllowAny],
-        "update": [IsAdminUser, NotIsDeleted, EmailConfirmed],
+        "update": [IsAuthenticated, NotIsDeleted, EmailConfirmed],
         "destroy": [IsAdminUser, NotIsDeleted, EmailConfirmed],
         "retrieve": [IsAdminUser, NotIsDeleted, EmailConfirmed],
         "confirm_email": [AllowAny]
