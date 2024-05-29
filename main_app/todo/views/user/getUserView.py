@@ -23,7 +23,7 @@ class GetUserView(viewsets.ViewSet):
     )
     def retrieve(self, request, pk=None):
         try:
-            user = self.queryset.get(pk=pk)
+            user = User.objects.get(pk=pk)
 
             serializer = UserSerializer(user)
 
