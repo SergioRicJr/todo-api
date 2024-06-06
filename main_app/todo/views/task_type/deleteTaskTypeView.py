@@ -33,7 +33,7 @@ class DeleteTaskTypeView(viewsets.ViewSet):
 
             task_type.delete()
 
-            logger.info(f"taskType with id {task_type.data['id']} deleted successfully by user with id {user.id}")
+            logger.info(f"taskType with id {task_type.id} deleted successfully by user with id {user.id}")
             return Response({"detail": "Task type deleted successfully"}, status=200)
 
         except PermissionDenied as error:

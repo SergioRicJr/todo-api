@@ -33,7 +33,7 @@ class UpdateTaskTypeView(viewsets.ViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
 
-            logger.info(f"taskType with id {task_type.data['id']} updated successfully by user with id {user.id}")
+            logger.info(f"taskType with id {task_type.id} updated successfully by user with id {user.id}")
             return Response(
                 {"detail": "Task type updated successfully", "object": serializer.data},
                 status=200,
