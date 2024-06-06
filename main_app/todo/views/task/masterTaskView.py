@@ -20,11 +20,11 @@ class MasterTaskViewSet(
 ):
     # Define a mapping of view actions to the corresponding permission classes required for each action.
     permission_classes_by_action = {
-        "list": [IsAdminUser, NotIsDeleted, EmailConfirmed],
-        "create": [IsAdminUser, NotIsDeleted, EmailConfirmed],
-        "update": [IsAdminUser, NotIsDeleted, EmailConfirmed],
-        "destroy": [IsAdminUser, NotIsDeleted, EmailConfirmed],
-        "retrieve": [IsAdminUser, NotIsDeleted, EmailConfirmed]
+        "list": [IsAuthenticated, NotIsDeleted, EmailConfirmed],
+        "create": [IsAuthenticated, NotIsDeleted, EmailConfirmed],
+        "update": [IsAuthenticated, NotIsDeleted, EmailConfirmed],
+        "destroy": [IsAuthenticated, NotIsDeleted, EmailConfirmed],
+        "retrieve": [IsAuthenticated, NotIsDeleted, EmailConfirmed]
     }
 
     authentication_classes = [JWTAuthentication]

@@ -22,10 +22,10 @@ class MasterUserViewSet(
 ):
     # Define a mapping of view actions to the corresponding permission classes required for each action.
     permission_classes_by_action = {
-        "list": [IsAuthenticated, NotIsDeleted, EmailConfirmed],
+        "list": [IsAdminUser, NotIsDeleted, EmailConfirmed],
         "create": [AllowAny],
         "update": [IsAuthenticated, NotIsDeleted, EmailConfirmed],
-        "destroy": [IsAdminUser, NotIsDeleted, EmailConfirmed],
+        "destroy": [IsAuthenticated, NotIsDeleted, EmailConfirmed],
         "retrieve": [IsAdminUser, NotIsDeleted, EmailConfirmed],
         "confirm_email": [AllowAny]
     }
