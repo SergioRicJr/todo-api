@@ -69,7 +69,7 @@ class GetTaskTypeView(viewsets.ViewSet):
                         "error_cause": error.args,
                     }
                 },
-                status=400,
+                status=404,
             )
 
         except Exception as error:
