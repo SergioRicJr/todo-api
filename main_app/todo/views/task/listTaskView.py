@@ -44,7 +44,7 @@ class ListTaskView(viewsets.ViewSet):
     def list(self, request):
         try:
             user = request.user
-            tasks = Task.objects.all().filter(user=user)
+            tasks = self.filter_queryset(Task.objects.all()).filter(user=user)
             serializer = TaskSerializer(tasks, many=True)
 
             if not serializer.data:
