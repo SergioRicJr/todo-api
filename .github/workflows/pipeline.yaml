@@ -1,0 +1,24 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Copia os arquivos do repo
+        uses: actions/checkout@v3
+
+      - name: Instalar o python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.11'
+
+      - name: Caminhar até o diretório main_app
+        run: cd main_app
+
+      - name: Instalar dependências do projeto
+        run: pip install -r requirements.txt
+
+      - name: Rodar os testes
+        run: pytest -s
