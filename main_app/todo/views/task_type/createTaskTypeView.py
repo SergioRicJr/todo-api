@@ -35,6 +35,8 @@ class CreateTaskTypeView(viewsets.ViewSet):
                 data={
                     "name": data.get("name"),
                     "description": data.get("description"),
+                    "icon": data.get("icon"),
+                    "color": data.get("color"),
                     "user": user.id,
                 }
             )

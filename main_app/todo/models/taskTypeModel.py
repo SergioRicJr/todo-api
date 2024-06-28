@@ -6,6 +6,8 @@ class TaskType(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="task_types")
+    color = models.CharField(max_length=12)
+    icon = models.CharField(max_length=50)
 
     class Meta:
         unique_together = (
