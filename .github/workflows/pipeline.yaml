@@ -6,19 +6,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Copia os arquivos do repo
-        uses: actions/checkout@v3
+      - name: Copiar arquivos do repositório
+        uses: actions/checkout@v4
 
-      - name: Instalar o python
-        uses: actions/setup-python@v3
+      - name: Instalar e configurar o Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.x'
 
-      - name: Caminhar até o diretório main_app
-        run: cd main_app
-
-      - name: Instalar dependências do projeto
-        run: pip install -r requirements.txt
+      - name: Instalar dependências
+        run: |
+          cd main_app
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Rodar os testes
-        run: pytest -s
+        run: |
+          cd main_app 
+          pytest -s
