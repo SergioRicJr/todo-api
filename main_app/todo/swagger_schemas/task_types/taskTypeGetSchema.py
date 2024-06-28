@@ -9,6 +9,8 @@ taskTypeUniqueSchema = openapi.Schema(
             properties={
                 "name": openapi.Schema(type=openapi.TYPE_STRING),
                 "description": openapi.Schema(type=openapi.TYPE_STRING),
+                "color": openapi.Schema(type=openapi.TYPE_STRING),
+                "icon": openapi.Schema(type=openapi.TYPE_STRING),
                 "user": openapi.Schema(type=openapi.TYPE_INTEGER)
             }
         )
