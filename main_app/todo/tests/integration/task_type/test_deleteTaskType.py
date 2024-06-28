@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 
 @patch("observability_mtl_instrument.logs.log_config.LokiLogHandler.send_logs")
-def test_user_deletion_must_return_status_200_and_object_with_user_removed_data(
+def test_task_type_deletion_must_return_status_200_and_object_with_task_type_removed_data(
     send_logs, auth_client
 ):
     created_task_type = TaskTypeFactory.create(

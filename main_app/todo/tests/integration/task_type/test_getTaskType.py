@@ -18,7 +18,7 @@ def test_get_task_type_must_return_status_200_and_object_with_task_type(
 
 
 @patch("observability_mtl_instrument.logs.log_config.LokiLogHandler.send_logs")
-def test_get_task_type_must_return_status_404_and_error_name(send_logs, auth_client):
-    response = auth_client.get("/task_type/92839182/")
+def test_get_task_must_return_status_404_and_error_name(send_logs, auth_client):
+    response = auth_client.get("/tasks/92839182/")
     assert response.data["detail"]["error_name"] == "DoesNotExist" 
     assert response.status_code == 404
