@@ -18,7 +18,8 @@ Este projeto é uma API com uma proposta de gerenciar atividades/tarefas a fazer
         * [Swagger](#swagger)
     * [Pacote de observabilidade](#pacote-de-observabilidade)
 * [Informações adicionais](#informacoes-adicionais)
-    * [Confirmação de email](confirmacao-de-email)
+    * [Confirmação de email](#confirmacao-de-email)
+    * [DER (Diagrama Entidade Relacionamento)](#Der-(Diagrama-Entidade-Relacionamento))
 
 ## Funcionalidades
 
@@ -235,3 +236,9 @@ Caso tenha interesse em conhecer mais sobre a configuração da API para se cone
 ### Confirmação de email
 
 Ao fazer uma requisição para criar conta, será enviado ao RabbitMQ uma mensagem com o token de liberação da conta gerado e o email para envio. A aplicação de envio de email realiza a formatação e o envio, baseado na leitura das mensagens no RabbitMQ, então somente acessando o link no email será possível ativar a conta e usar as funcionalidades.
+
+### DER (Diagrama Entidade Relacionamento)
+
+Parte do processo de desenvolvimento se deu ao planejamento, diagramação e prototipação. E o diagrama abaixo representa o banco de dados utilizado:
+
+![Imagem do diagrama entidade relacionamento](./images/DER.png)
