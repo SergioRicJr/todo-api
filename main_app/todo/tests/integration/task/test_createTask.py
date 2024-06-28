@@ -12,7 +12,7 @@ def test_task_creation_must_return_status_201_and_object_with_task_data(
         {
             "title": "Jogar futebol",
             "description": "Atividades relacionadas a exercício físico e cuidado com o corpo",
-            "due_date": "2026-12-12",
+            "due_date": "2026-12-12T12:45",
             "task_type": task_type.id
         },
         format="json",
@@ -23,7 +23,7 @@ def test_task_creation_must_return_status_201_and_object_with_task_data(
         "user": 1,
         "task_type": task_type.id,
         "completed": False,
-        "due_date": "2026-12-12"
+        "due_date": "2026-12-12T12:45:00Z"
     }
     assert response.status_code == 201
     assert all(

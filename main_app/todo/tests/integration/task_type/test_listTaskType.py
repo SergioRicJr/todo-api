@@ -10,7 +10,7 @@ def test_list_task_type_must_return_status_200_and_object_with_list_of_task_type
 ):
     TaskTypeFactory.create_batch(5, user=User.objects.get(pk=1))
     response = auth_client.get(f"/task_type/")
-    task_type_fields = ["id", "name", "description", "user"]
+    task_type_fields = ["id", "name", "description", "color", "icon", "user"]
     assert all(field in task_type_fields for field in dict(response.data["object"][0]))
     assert response.status_code == 200
 

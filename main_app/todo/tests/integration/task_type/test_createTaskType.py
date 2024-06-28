@@ -11,12 +11,16 @@ def test_task_type_creation_must_return_status_201_and_object_with_task_type_dat
         {
             "name": "esportes",
             "description": "Atividades relacionadas a exercício físico e cuidado com o corpo",
+            "color": "ffffff",
+            "icon": "MyIcon",
         },
         format="json",
     )
     user_object = {
         "name": "esportes",
         "description": "Atividades relacionadas a exercício físico e cuidado com o corpo",
+        "color": "ffffff",
+        "icon": "MyIcon",
         "user": 1,
     }
     assert response.status_code == 201
@@ -34,6 +38,8 @@ def test_task_type_creation_must_return_status_400_for_duplicate_name(
         {
             "name": "esportes",
             "description": "Outra descrição",
+            "color": "ffffff",
+            "icon": "MyIcon",
         },
         format="json",
     )
