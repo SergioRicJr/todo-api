@@ -397,7 +397,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"nome do tipo de tarefa\",\r\n    \"description\": \"descrição do tipo de tarefa\"\r\n}",
+							"raw": "{\r\n    \"name\": \"nome do tipo de tarefa\",\r\n    \"description\": \"descrição do tipo de tarefa\",\r\n    \"icon\": \"Nome do ícone\",\r\n    \"color\": \"código hexadecimal da cor\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -568,7 +568,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"título da tarefa\",\r\n    \"description\": \"descrição da tarefa\",\r\n    \"due_date\": \"YYYY-MM-DD\",\r\n    \"task_type\": 0\r\n}",
+							"raw": "{\r\n    \"title\": \"título da tarefa\",\r\n    \"description\": \"descrição da tarefa\",\r\n    \"due_date\": \"AAAA-MM-DDThh:mm\",\r\n    \"task_type\": 0\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

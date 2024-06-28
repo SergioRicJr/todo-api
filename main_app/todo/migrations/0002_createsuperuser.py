@@ -5,7 +5,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("todo", "0002_user_email_confirmed"),
+        ("todo", "0001_initial"),
     ]
 
     def generate_superuser(apps, schema_editor):
