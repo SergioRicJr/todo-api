@@ -231,6 +231,219 @@ O pacote de observabilidade permite que as informações de métricas, traces e 
 
 Caso tenha interesse em conhecer mais sobre a configuração da API para se conectar e trocar informações com as ferramentas Prometheus, PushGateway, Loki e tempo, você pode acessar o repoitório da [biblioteca observability-mtl-instrument](https://github.com/SergioRicJr/observability-mtl-instrument), que foi desenvolvida por mim e utilizada nesse projeto.
 
+Aqui está uma sugestão de README explicando sobre testes unitários e de integração, sua importância, como eles funcionam no seu projeto e como executá-los usando `pytest`.
+
+---
+
+## Documentação de Testes
+
+### Introdução
+
+Este projeto utiliza **testes unitários** e **testes de integração** para garantir a qualidade do código, verificar a integridade das funcionalidades e evitar a introdução de bugs em novas implementações.
+
+#### O que são Testes Unitários?
+Os **testes unitários** verificam o comportamento de unidades isoladas de código, como funções, métodos ou classes. Eles asseguram que cada componente do sistema funcione conforme o esperado, independentemente de outros componentes.
+
+**Benefícios:**
+- Facilitam a identificação de erros em partes específicas do código.
+- Servem como documentação viva do comportamento esperado.
+- Aumentam a confiabilidade do sistema ao garantir a estabilidade das unidades.
+
+#### O que são Testes de Integração?
+Os **testes de integração** verificam se diferentes módulos ou componentes do sistema funcionam corretamente quando integrados. Eles testam o fluxo de dados entre diferentes partes da aplicação.
+
+**Benefícios:**
+- Garantem que os módulos funcionem em conjunto como esperado.
+- Detectam problemas que podem surgir devido à comunicação entre componentes.
+- Simulam cenários reais de uso da aplicação.
+
+---
+
+### Estrutura de Testes no Projeto
+
+#### Arquivos de Teste
+
+- **`taskFactory.py`**: Define uma fábrica de objetos para criar usuários fictícios usados nos testes.
+- **`conftest.py`**: Configura fixtures para o ambiente de testes, incluindo cliente de API, autenticação e criação de usuários.
+- **`test_createUser.py`**: Contém testes de integração para verificar a criação de usuários via API.
+- **`test_random_hash.py`**: Contém testes unitários para verificar a função `make_random_hash`.
+
+---
+
+### Descrição dos Testes
+
+#### 1. **Exemplo Testes de Integração**
+
+##### Arquivo: `test_createUser.py`
+Este arquivo testa o endpoint de criação de usuários, verificando:
+
+- **`test_user_creation_must_return_status_201_and_object_with_user_data`**:  
+  Verifica se a criação de um usuário válido retorna status `201` e os dados corretos no objeto de resposta.
+
+- **`test_user_creation_must_return_status_400_and_error_message`**:  
+  Verifica se a criação de um usuário com dados inválidos retorna status `400` e uma mensagem de erro apropriada.
+
+---
+
+#### 2. **Exemplo de Testes Unitários**
+
+##### Arquivo: `test_random_hash.py`  
+Este arquivo testa a função `make_random_hash`, que gera uma string hash aleatória.
+
+- **`test_make_random_hash_length`**:  
+  Verifica se o hash gerado possui exatamente 64 caracteres.
+
+- **`test_make_random_hash_uniqueness`**:  
+  Verifica se dois hashes gerados consecutivamente são diferentes, garantindo a unicidade.
+
+---
+
+## Fluxo de Criação e Descarte do Banco de Dados em `conftest.py`
+
+#### 1. **Configuração Inicial:**
+
+No início do `conftest.py`, temos a função `pytest_configure()` que remove o middleware `ObservabilityMiddleware` da configuração antes de executar os testes:
+
+```python
+def pytest_configure():
+    settings.MIDDLEWARE.remove(
+        "todo.middlewares.observabilityMiddleware.ObservabilityMiddleware"
+    )
+```
+
+Isso garante que o middleware de observabilidade não interfira nos testes.
+
+---
+
+#### 2. **Fixture `client`:**
+
+A fixture `client` cria uma instância do cliente de teste do Django REST Framework (`APIClient`), usada para enviar requisições HTTP nos testes.
+
+```python
+@fixture(scope="session")
+def client(django_db_setup, django_db_blocker):
+    with django_db_blocker.unblock():
+        client = APIClient()
+        yield client
+```
+
+- **`django_db_setup`**: Configura o banco de dados temporário para a sessão de testes.
+- **`django_db_blocker.unblock()`**: Permite a execução de operações no banco de dados durante os testes, desbloqueando o acesso temporário.
+
+O banco de dados é criado automaticamente pelo `pytest-django` com base nas configurações do Django (`settings.DATABASES`) e é descartado automaticamente no final da execução dos testes.
+
+---
+
+#### 3. **Fixture `auth_token`:**
+
+Essa fixture realiza uma requisição de login e retorna o token de autenticação, que será usado nos testes para autenticar o cliente.
+
+```python
+@fixture(scope="session")
+def auth_token(client):
+    response = client.post(
+        "/auth/login/", data={"username": "admin", "password": "admin"}, format="json"
+    )
+    yield response.data["access"]
+```
+
+- Ela utiliza o cliente `APIClient` para fazer a requisição POST no endpoint `/auth/login/`.
+- O token de autenticação é retornado para ser usado nos testes que exigem autenticação.
+
+---
+
+#### 4. **Fixture `auth_client`:**
+
+Essa fixture configura o cliente autenticado, adicionando o token de autenticação no cabeçalho de cada requisição.
+
+```python
+@fixture(scope="session")
+def auth_client(auth_token, client):
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {auth_token}")
+    yield client
+```
+
+---
+
+#### 5. **Fixture `create_users`:**
+
+Essa fixture utiliza a `UserFactory` para criar um lote de 5 usuários fictícios no banco de dados temporário.
+
+```python
+@fixture
+def create_users():
+    return UserFactory.create_batch(5)
+```
+
+---
+
+### Criação e Descarte do Banco de Dados
+
+O banco de dados temporário é gerenciado automaticamente pelo `pytest`, com o seguinte fluxo:
+
+1. **Criação:**  
+   - Antes de executar os testes, a fixture cria um banco de dados temporário baseado nas configurações do Django.
+   - As migrações são aplicadas automaticamente para configurar o esquema do banco de dados.
+
+2. **Uso nos Testes:**  
+   - Durante a execução dos testes, todas as operações de banco de dados (como inserções, atualizações, e exclusões) são realizadas nesse banco de dados temporário.
+   - O banco é isolado para garantir que os dados criados em um teste não afetem outros testes.
+
+3. **Descarte:**  
+   - Após a execução de todos os testes, o banco de dados temporário é automaticamente descartado.
+   - Isso garante que nenhum dado de teste seja persistido após a execução.
+
+---
+
+#### Vantagens do Banco de Dados Temporário
+
+- **Isolamento:** Cada execução de teste é completamente isolada, evitando efeitos colaterais entre os testes.
+- **Automação:** O `pytest-django` gerencia automaticamente a criação e o descarte do banco de dados, reduzindo a necessidade de configuração manual.
+- **Desempenho:** O uso de um banco de dados temporário minimiza o risco de erros relacionados a dados persistentes entre diferentes execuções de teste.
+
+---
+
+### Como Executar os Testes
+
+#### 1. Configurar ambiente
+
+**Acessar pasta correta**
+
+```
+    cd main_app
+```
+
+**Criar ambiente virtual**
+
+```
+    python -m venv ./venv
+```
+
+**Ativar ambiente virtual**
+
+```
+   ./venv/Scripts/activate
+```
+
+**Baixar dependências**
+
+```
+    pip install -r requirements.txt
+```
+
+#### 2. Executar os Testes
+
+```
+    pytest
+```
+
+#### 3. Resultados
+
+![Resultado dos testes](./images/image.png)
+
+---
+
+
 ## Informações adicionais
 
 ### Confirmação de email
